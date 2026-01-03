@@ -26,20 +26,12 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 // Remove base path and query string from URI
 $basePath = '/scandiweb';
 $requestUri = $_SERVER['REQUEST_URI'];
-
-// Remove query string if present
-if (false !== $pos = strpos($requestUri, '?')) { 
-    $requestUri = substr($requestUri, 0, $pos);           // cut everything after "?"
-}
+ 
 
 // Remove base path
 if (strpos($requestUri, $basePath) === 0) {         
     $requestUri = substr($requestUri, strlen($basePath)); // strip the base path from the beginning
-}
-
-// Ensure URI starts with /
-if (empty($requestUri) || $requestUri[0] !== '/') {       // if URI is empty or doesn't start with "/"  prepend "/" to make it a valid URI
-}
+} 
 
 $routeInfo = $dispatcher->dispatch(
     $_SERVER['REQUEST_METHOD'],
