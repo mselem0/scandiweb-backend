@@ -21,11 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->post('/graphql', [App\Controller\GraphQL::class, 'handle']);
-});
-
-// Remove base path and query string from URI
-$basePath = '/scandiweb';
-$requestUri = $_SERVER['REQUEST_URI'];
+}); 
 
 // Remove query string if present
 if (false !== $pos = strpos($requestUri, '?')) {
