@@ -23,15 +23,20 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->post('/graphql', [App\Controller\GraphQL::class, 'handle']);
 });
 
+$requestUri = $_SERVER['REQUEST_URI'];
+
+//*************************************************************** */
+/**
+ * This is because I have the backend in a subdirectory of the project.
+ */
 // Remove base path and query string from URI
 $basePath = '/scandiweb';
-$requestUri = $_SERVER['REQUEST_URI'];
  
-
 // Remove base path
 if (strpos($requestUri, $basePath) === 0) {         
     $requestUri = substr($requestUri, strlen($basePath)); // strip the base path from the beginning
 } 
+//*************************************************************** */
 
 $routeInfo = $dispatcher->dispatch(
     $_SERVER['REQUEST_METHOD'],
