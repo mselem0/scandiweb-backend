@@ -1,0 +1,277 @@
+{
+	"info": {
+		"_postman_id": "scandi-web-graphql-api",
+		"name": "Scandi Web - GraphQL API",
+		"description": "Complete GraphQL API collection for Scandi Web backend with queries and mutations for categories, products, and orders.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetAllCategories {\n  categories {\n    name\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Fetch all available categories"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category by Name",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetCategory($name: String!) {\n  category(name: $name) {\n    name\n  }\n}",
+								"variables": "{\n  \"name\": \"all\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Fetch a specific category by its name"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetAllProducts {\n  products {\n    id\n    name\n    brand\n    inStock\n    gallery\n    description\n    category\n    prices {\n      amount\n      currency {\n        label\n        symbol\n      }\n    }\n    attributes {\n      id\n      name\n      type\n      items {\n        id\n        displayValue\n        value\n      }\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Fetch all products with complete details including prices, attributes, and gallery"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products by Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetProductsByCategory($category: String) {\n  products(category: $category) {\n    id\n    name\n    brand\n    inStock\n    gallery\n    description\n    category\n    prices {\n      amount\n      currency {\n        label\n        symbol\n      }\n    }\n    attributes {\n      id\n      name\n      type\n      items {\n        id\n        displayValue\n        value\n      }\n    }\n  }\n}",
+								"variables": "{\n  \"category\": \"all\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Fetch products filtered by category. Available categories: 'all', 'clothes', 'tech'"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetProduct($id: String!) {\n  product(id: $id) {\n    id\n    name\n    brand\n    inStock\n    gallery\n    description\n    category\n    prices {\n      amount\n      currency {\n        label\n        symbol\n      }\n    }\n    attributes {\n      id\n      name\n      type\n      items {\n        id\n        displayValue\n        value\n      }\n    }\n  }\n}",
+								"variables": "{\n  \"id\": \"huarache-x-stussy-le\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Fetch a single product by its ID with complete details"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateOrder($items: [OrderItemInput]!) {\n  createOrder(items: $items) {\n    id\n    totalAmount\n    currency\n    status\n    itemCount\n  }\n}",
+								"variables": "{\n  \"items\": [\n    {\n      \"productId\": \"huarache-x-stussy-le\",\n      \"quantity\": 1,\n      \"selectedAttributes\": [\n        {\n          \"attributeId\": \"Size\",\n          \"attributeItemId\": \"40\"\n        },\n        {\n          \"attributeId\": \"Color\",\n          \"attributeItemId\": \"Green\"\n        }\n      ]\n    },\n    {\n      \"productId\": \"jacket-canada-goosee\",\n      \"quantity\": 2,\n      \"selectedAttributes\": [\n        {\n          \"attributeId\": \"Size\",\n          \"attributeItemId\": \"Medium\"\n        }\n      ]\n    }\n  ]\n}"
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Create a new order with multiple items and their selected attributes"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order - Simple (No Attributes)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateOrder($items: [OrderItemInput]!) {\n  createOrder(items: $items) {\n    id\n    totalAmount\n    currency\n    status\n    itemCount\n  }\n}",
+								"variables": "{\n  \"items\": [\n    {\n      \"productId\": \"apple-imac-2021\",\n      \"quantity\": 1,\n      \"selectedAttributes\": []\n    }\n  ]\n}"
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "Create an order with a single product without attributes"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GraphQL Introspection",
+			"item": [
+				{
+					"name": "Get Schema",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query IntrospectionQuery {\n  __schema {\n    queryType {\n      name\n      fields {\n        name\n        description\n        args {\n          name\n          description\n          type {\n            name\n            kind\n          }\n        }\n      }\n    }\n    mutationType {\n      name\n      fields {\n        name\n        description\n        args {\n          name\n          description\n          type {\n            name\n            kind\n          }\n        }\n      }\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						},
+						"description": "GraphQL introspection query to explore the API schema"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}

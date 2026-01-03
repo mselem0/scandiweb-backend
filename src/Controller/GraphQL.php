@@ -1,71 +1,87 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
+use App\GraphQL\Queries\QueryType;
+use App\GraphQL\Mutations\MutationType;
 use GraphQL\GraphQL as GraphQLBase;
-use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Schema;
 use GraphQL\Type\SchemaConfig;
+use GraphQL\Error\DebugFlag;
 use RuntimeException;
 use Throwable;
 
-class GraphQL {
-    static public function handle() {
+/**
+ * GraphQL Controller
+ * 
+ * Handles all GraphQL requests
+ */
+class GraphQL
+{
+    /**
+     * Handle GraphQL request
+     * 
+     * @return string JSON response
+     */
+    public static function handle(): string
+    {
         try {
-            $queryType = new ObjectType([
-                'name' => 'Query',
-                'fields' => [
-                    'echo' => [
-                        'type' => Type::string(),
-                        'args' => [
-                            'message' => ['type' => Type::string()],
-                        ],
-                        'resolve' => static fn ($rootValue, array $args): string => $rootValue['prefix'] . $args['message'],
-                    ],
-                ],
-            ]);
-        
-            $mutationType = new ObjectType([
-                'name' => 'Mutation',
-                'fields' => [
-                    'sum' => [
-                        'type' => Type::int(),
-                        'args' => [
-                            'x' => ['type' => Type::int()],
-                            'y' => ['type' => Type::int()],
-                        ],
-                        'resolve' => static fn ($calc, array $args): int => $args['x'] + $args['y'],
-                    ],
-                ],
-            ]);
-        
-            // See docs on schema options:
-            // https://webonyx.github.io/graphql-php/schema-definition/#configuration-options
+            // Build schema with our custom types
             $schema = new Schema(
                 (new SchemaConfig())
-                ->setQuery($queryType)
-                ->setMutation($mutationType)
+                    ->setQuery(new QueryType())
+                    ->setMutation(new MutationType())
             );
-        
+
+            // Get input
             $rawInput = file_get_contents('php://input');
             if ($rawInput === false) {
-                throw new RuntimeException('Failed to get php://input');
+                throw new RuntimeException('Failed to read request body');
             }
-        
+
             $input = json_decode($rawInput, true);
-            $query = $input['query'];
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new RuntimeException('Invalid JSON in request body');
+            }
+
+            $query = $input['query'] ?? '';
             $variableValues = $input['variables'] ?? null;
-        
-            $rootValue = ['prefix' => 'You said: '];
-            $result = GraphQLBase::executeQuery($schema, $query, $rootValue, null, $variableValues);
-            $output = $result->toArray();
+            $operationName = $input['operationName'] ?? null;
+
+            // Execute query
+            $result = GraphQLBase::executeQuery(
+                $schema,
+                $query,
+                null,
+                null,
+                $variableValues,
+                $operationName
+            );
+
+            // Format output
+            $debug = ($_ENV['APP_DEBUG'] ?? 'false') === 'true'
+                ? DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE
+                : DebugFlag::NONE;
+
+            $output = $result->toArray($debug);
         } catch (Throwable $e) {
             $output = [
-                'error' => [
-                    'message' => $e->getMessage(),
-                ],
+                'errors' => [
+                    [
+                        'message' => $e->getMessage(),
+                        'extensions' => [
+                            'category' => 'internal'
+                        ]
+                    ]
+                ]
             ];
+
+            // Add trace in debug mode
+            if (($_ENV['APP_DEBUG'] ?? 'false') === 'true') {
+                $output['errors'][0]['extensions']['trace'] = $e->getTraceAsString();
+            }
         }
 
         header('Content-Type: application/json; charset=UTF-8');
