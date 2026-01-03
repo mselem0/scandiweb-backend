@@ -21,23 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->post('/graphql', [App\Controller\GraphQL::class, 'handle']);
-}); 
-
-// Remove query string if present
-if (false !== $pos = strpos($requestUri, '?')) {
-    $requestUri = substr($requestUri, 0, $pos);
-}
-
-// Remove base path
-if (strpos($requestUri, $basePath) === 0) {
-    $requestUri = substr($requestUri, strlen($basePath));
-}
-
-// Ensure URI starts with /
-if (empty($requestUri) || $requestUri[0] !== '/') {
-    $requestUri = '/' . $requestUri;
-}
-
+});
+ 
 $routeInfo = $dispatcher->dispatch(
     $_SERVER['REQUEST_METHOD'],
     $requestUri
