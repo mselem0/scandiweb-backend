@@ -32,19 +32,19 @@ abstract class AbstractProduct extends AbstractModel
 
     /**
      * Get the product type
-     *@return string
+     * @return string
      */
     abstract public function getType(): string;
 
     /**
      * Get type-specific display data
-     *@return array
+     * @return array
      */
     abstract public function getTypeSpecificData(): array;
 
     /**
      * Convert to array
-     *@return array
+     * @return array
      */
     public function toArray(): array
     {

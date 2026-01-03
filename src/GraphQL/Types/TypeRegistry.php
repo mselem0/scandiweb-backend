@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\GraphQl\Types;
+namespace App\GraphQL\Types;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
